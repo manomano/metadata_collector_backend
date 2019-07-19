@@ -2,7 +2,6 @@ var express = require('express');
 const UserModel = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const jwt=require('jsonwebtoken');
-const key=require("../key");
 
 const saltRounds = 10;
 
@@ -40,9 +39,9 @@ exports.login = function (req,res, next) {
     UserModel.findOne({username:req.body.username}).then((user)=>{
         user.comparePassword(req.body.password,(err,isMatch)=>{
             if(isMatch){
-                var token=jwt.sign({userId:user.id},key.tokenKey);
+                var token=jwt.sign({userId:user.id},process.env.TOKENKEY);
                 res.status(200).json({
-                    userId:user.id,
+                    //userId:user.id,
                     username:user.username,
                     fullName:user.fullName,
                     groupId:user.groupId,

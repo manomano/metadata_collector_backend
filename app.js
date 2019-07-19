@@ -1,12 +1,12 @@
 var createError = require('http-errors');
 var express = require('express');
+const dotenv = require('dotenv').config();
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
 const database = require('./database');
 const jwt=require('jsonwebtoken')
-const key=require("./key");
 const user = require('./models/user.model');
 
 var indexRouter = require('./routes/index');
@@ -33,7 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(function(req,res,next){
   try{
     const token = req.headers.authorization.split(" ")[1]
-    jwt.verify(token, key.tokenKey, function (err, payload) {
+    jwt.verify(token, process.env.TOKENKEY, function (err, payload) {
       console.log(payload)
       if (payload) {
         user.findById(payload.userId).then(
