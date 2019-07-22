@@ -11,7 +11,7 @@ class Database {
     }
 
     _connect() {
-        mongoose.connect(`mongodb://${server}/${database}`,{ useNewUrlParser: true } )
+        mongoose.connect(`mongodb://${server}/${database}`,{ useNewUrlParser: true/*,  autoIndex: false*/ } )
             .then(() => {
                 console.log('Database connection successful')
             })

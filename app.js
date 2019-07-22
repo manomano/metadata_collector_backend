@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const database = require('./database');
 const jwt=require('jsonwebtoken')
 const user = require('./models/user.model');
+const metadata = require('./models/metadata.model');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -22,12 +23,14 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(express.json());
 
-console.log(`Your port is from eviroment ${process.env.PORT}`);
+console.log(`Your port is from environment ${process.env.PORT}`);
 
 
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+console.log("metadata is here",new metadata());
 
 
 app.use(function(req,res,next){

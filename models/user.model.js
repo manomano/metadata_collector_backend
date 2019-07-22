@@ -44,7 +44,12 @@ const userSchema = new Schema({
         validate: (value) => {
             return validator.isEmail(value)
         }
-    }
+    },role:{
+        type: String,
+        enum : ['user','admin'],
+        default: 'user',
+        required:true
+    },
 
 }, {
     timestamps: true,

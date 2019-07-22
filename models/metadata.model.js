@@ -6,39 +6,68 @@ let validator = require('validator');
 
 const Schema = mongoose.Schema;
 
-const commentsSchema = new Schema({
-    comment:{
+const statuseSchema = new Schema({
+    status:{
         type:String,
-        required:false
-    },
-    commentDate:{
-        type: { type: Date, default: Date.now },
+        enum:['template','metadata','sent','commencedCorrection','corrected']
     }
-})
+},{
+    timestamps: true
+});
+
+class factory{
+
+    static comment = {
+        comment:{
+            type:String,
+            required:false
+        }
+    };
+    static generateComment(){
+        return new Schema(self.comment,{timestamps: true})
+    }
+
+    static generateTextFieldSchema(fieldName){
+
+        let paramsOject = {
+            comments:[factory.generateComment()]
+        }
+
+        paramsOject[fieldName] = {
+            type:String,
+            required: true
+        }
+        new Schema(paramsOject,{timestamps: true})
+    }
+
+}
 
 
-const resource_name = new Schema({
-    comments:[commentsSchema],
-    resourceName:{
-        type:String,
-        required: true
-    }
-},{})
+
+const allNestedSchemas = {}
+allNestedSchemas.resource_name = factory.generateTextFieldSchema('resource_name');
+allNestedSchemas.resource_alt_name = factory.generateTextFieldSchema('resource_alt_name');
+allNestedSchemas.resource_brief_desc = factory.generateTextFieldSchema('resource_brief_desc');
+allNestedSchemas.resource_type = factory.generateTextFieldSchema('resource_type');
 
 
 const metadataSchema = new Schema({
-    userId: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true,
-        minlength: 3
-    },
-    resource_name: resource_name,
-
-
-
+    user:{ type: Schema.Types.ObjectId, ref: 'user' },
+    statuses:[statuseSchema],
+    resource_name: allNestedSchemas.resource_name,
+    resource_alt_name: [allNestedSchemas.resource_alt_name],
+    resource_brief_desc: allNestedSchemas.resource_brief_desc,
+    resource_type: allNestedSchemas.resource_type,
     },{
         timestamps: true
     }
 );
+
+
+// new metadata({
+//     user:"5d31d32d842c0f2520377a0b",
+// })
+
+const Metadata = mongoose.model('Metadata', metadataSchema);
+
+module.exports = Metadata;
