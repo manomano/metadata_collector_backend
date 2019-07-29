@@ -9,9 +9,13 @@ const database = require('./database');
 const jwt=require('jsonwebtoken')
 const user = require('./models/user.model');
 const metadata = require('./models/metadata.model');
+const metadata_fields = require('./models/metadata_fields.model');
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var metadataRouter = require('./routes/metadata');
+
 
 var app = express();
 
@@ -30,7 +34,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-console.log("metadata is here",new metadata());
+//console.log("metadata is here",new metadata());
 
 
 app.use(function(req,res,next){
@@ -57,6 +61,7 @@ app.use(function(req,res,next){
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/metadata', metadataRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

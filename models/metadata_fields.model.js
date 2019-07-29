@@ -16,7 +16,7 @@ const metadataFieldsSchema = new Schema({
     label:String,
     note:String,
     num:String,
-    isRequired:Boolean,
+    isRequired:String,
     sample:String,
     fieldType:{
         type: String,
@@ -42,7 +42,8 @@ const metadataFieldsSchema = new Schema({
         required:true
     },
     children:[mongoose.Schema.Types.ObjectId],
-    dropDownData:[dropDownSchema]
+    dropDownData:[dropDownSchema],
+    sort:Number
 });
 
 
