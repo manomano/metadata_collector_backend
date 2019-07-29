@@ -65,8 +65,8 @@ allNestedSchemas["1_8"] = factory.generateTextFieldSchema("1_8");
 allNestedSchemas["1_9_1"] = factory.generateTextFieldSchema("1_9_1");
 allNestedSchemas["1_9_3"] = factory.generateTextFieldSchema("1_9_3");
 allNestedSchemas["1_9_4"] = factory.generateTextFieldSchema("1_9_4");
-allNestedSchemas["1_10.1"] = factory.generateTextFieldSchema("1_10.1");
-allNestedSchemas["1_10.2"] = factory.generateTextFieldSchema("1_10.2");
+allNestedSchemas["1_10_1"] = factory.generateTextFieldSchema("1_10_1");
+allNestedSchemas["1_10_2"] = factory.generateTextFieldSchema("1_10_2");
 allNestedSchemas["2_1"] = factory.generateTextFieldSchema("2_1");
 allNestedSchemas["3_1_1"] = factory.generateTextFieldSchema("3_1_1");
 allNestedSchemas["3_1_2"] = factory.generateTextFieldSchema("3_1_2");
@@ -132,11 +132,12 @@ const metadataSchema = new Schema({
     "1_6":[allNestedSchemas["1_6"]],
     "1_7":allNestedSchemas["1_7"],
     "1_8":allNestedSchemas["1_8"],
-    "1_9_1":allNestedSchemas["1_9_1"],
-    "1_9_3":allNestedSchemas["1_9_3"],
-    "1_9_4":allNestedSchemas["1_9_4"],
-    "1_10.1":allNestedSchemas["1_10.1"],
-    "1_10.2":allNestedSchemas["1_10.2"],
+    "1_9":[{"1_9_1":allNestedSchemas["1_9_1"],
+        "1_9_3":allNestedSchemas["1_9_3"],
+        "1_9_4":allNestedSchemas["1_9_4"]}],
+    "1_10":[{
+    "1_10_1":allNestedSchemas["1_10_1"],
+    "1_10_2":allNestedSchemas["1_10_2"]}],
     "2_1":allNestedSchemas["2_1"],
     "3_1_1":allNestedSchemas["3_1_1"],
     "3_1_2":allNestedSchemas["3_1_2"],
@@ -172,19 +173,20 @@ const metadataSchema = new Schema({
     "9_2":[allNestedSchemas["9_2"]],
     "9_3":allNestedSchemas["9_3"],
     "9_4":[allNestedSchemas["9_4"]],
-    "10.1":allNestedSchemas["10.1"],
-    "10.2":allNestedSchemas["10.2"],
-    "10.3":allNestedSchemas["10.3"],
-    "10.4":allNestedSchemas["10.4"],
+    "10":[{"10.1":allNestedSchemas["10.1"],
+        "10.2":allNestedSchemas["10.2"],
+        "10.3":allNestedSchemas["10.3"],
+        "10.4":allNestedSchemas["10.4"]}],
     "11_1_1":allNestedSchemas["11_1_1"],
     "11_1_2":allNestedSchemas["11_1_2"],
     "11_2":allNestedSchemas["11_2"],
     "11_3":allNestedSchemas["11_3"],
     "11_4":allNestedSchemas["11_4"],
+    "11_5":[{
     "11_5_1":allNestedSchemas["11_5_1"],
     "11_5_2":allNestedSchemas["11_5_2"],
     "11_5_3":allNestedSchemas["11_5_3"],
-    "11_5_4":allNestedSchemas["11_5_4"]
+    "11_5_4":allNestedSchemas["11_5_4"]}]
 
     },{
         timestamps: true
