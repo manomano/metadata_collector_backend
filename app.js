@@ -8,9 +8,9 @@ const mongoose = require('mongoose');
 const database = require('./database');
 const jwt=require('jsonwebtoken')
 const user = require('./models/user.model');
-const metadata = require('./models/metadata.model');
-const metadata_fields = require('./models/metadata_fields.model');
-
+//const metadata = require('./models/metadata.model');
+//const metadata_fields = require('./models/metadata_fields.model');
+const enumsObject  = require('./utils/enums')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -18,6 +18,12 @@ var metadataRouter = require('./routes/metadata');
 
 
 var app = express();
+
+
+
+app.locals.enumsObject= enumsObject;
+
+console.log("enumsObject",enumsObject);
 
 
 // view engine setup

@@ -4,6 +4,7 @@ let validator = require('validator');
 
 
 
+
 const Schema = mongoose.Schema;
 
 const statuseSchema = new Schema({
@@ -35,14 +36,15 @@ class factory{
             comments:[factory.generateComment()]
         }
 
-        // paramsOject[fieldName] = {
-        //     type:String,
-        //     required: true
-        // }
-
         paramsOject.value = {
             type:String,
             required: true
+        }
+
+
+
+        if(app.locals.enumsObject.hasOwnProperty([fieldName])){
+            paramsOject.enums = app.locals.enumsObject[fieldName].theSet;
         }
 
         return new Schema(paramsOject,{timestamps: true})
