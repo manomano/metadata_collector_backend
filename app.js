@@ -8,22 +8,34 @@ const mongoose = require('mongoose');
 const database = require('./database');
 const jwt=require('jsonwebtoken')
 const user = require('./models/user.model');
-//const metadata = require('./models/metadata.model');
-//const metadata_fields = require('./models/metadata_fields.model');
-const enumsObject  = require('./utils/enums')
+const enumsModel = require('./models/enums.model')
+
+
+
+
+app = express();
+
+function loadEnums(){
+  enumsModel.find(function (err, enums) {
+    if (err) return console.error(err);
+    let myEnums = {}
+    enums.forEach((el)=>myEnums[el.name] = {"table":el.table, "theSet":el.theSet})
+
+    app.locals.enumsObject= myEnums;
+    console.log("from enums callback");
+    var metadataRouter = require('./routes/metadata');
+    app.use('/metadata', metadataRouter);
+
+  });
+}
+
+loadEnums();
+
+
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var metadataRouter = require('./routes/metadata');
 
-
-var app = express();
-
-
-
-app.locals.enumsObject= enumsObject;
-
-console.log("enumsObject",enumsObject);
 
 
 // view engine setup
@@ -67,7 +79,7 @@ app.use(function(req,res,next){
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/metadata', metadataRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

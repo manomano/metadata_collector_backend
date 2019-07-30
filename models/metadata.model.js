@@ -119,8 +119,6 @@ allNestedSchemas["11_5_3"] = factory.generateTextFieldSchema("11_5_3");
 allNestedSchemas["11_5_4"] = factory.generateTextFieldSchema("11_5_4");
 
 
-//console.log(allNestedSchemas);
-
 
 const metadataSchema = new Schema({
     "user":{ type: Schema.Types.ObjectId, ref: 'User' },
