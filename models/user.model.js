@@ -3,9 +3,6 @@ mongoose.Promise = require('q').Promise;
 //var bcrypt = require('bcrypt');
 const bcryptjs = require('bcryptjs');
 
-// native promises
-//mongoose.Promise = global.Promise;
-
 
 let validator = require('validator')
 

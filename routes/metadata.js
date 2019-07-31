@@ -14,6 +14,8 @@ router.get('/', function(req, res, next) {
 
 router.post('/create', metadataController.createMetadata);
 
+router.put('/update/:id', metadataController.update);
+
 //router.put('/update:id', metadataController.update);
 //router.delete('/delete:id', metadataController.delete);
 //router.get('/:id', metadataController.getById);

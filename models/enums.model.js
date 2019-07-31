@@ -12,5 +12,5 @@ const enumsSchema = new Schema({
     theSet:[String]
 });
 
-const enumModel = mongoose.model('SeparatedEnum', enumsSchema, 'separatedEnums')
+const enumModel = mongoose.model('SeparatedEnum', enumsSchema)
 module.exports = enumModel;
