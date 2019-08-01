@@ -24,7 +24,8 @@ class factory {
             comment: {
                 type: String,
                 required: false
-            }
+            },
+            user:{type:Schema.Types.ObjectId, index:true, ref:'User'}
         }
     };
 
@@ -196,9 +197,19 @@ const metadataSchema = new Schema({
         timestamps: true
     },
 );
-//metadataSchema.set('toJSON', { virtuals: true });
 
-const Metadata = mongoose.model('Metadata', metadataSchema);
 
-module.exports = Metadata;
+const fieldSchema = new Schema({
+    record:{ref:'Doc', type: Schema.Types.ObjectId, index:true},
+    user:{ref:'User', type: Schema.Types.ObjectId, index:true},
+    comments:[factory.generateComment()],
+    key:String,
+    value:String,
+    objectValue:Object
+}, {timestamps: true})
+
+
+const Field = mongoose.model('Field', fieldSchema);
+
+module.exports = Field;
 
