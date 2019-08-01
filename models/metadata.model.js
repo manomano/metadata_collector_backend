@@ -6,6 +6,8 @@ const enumsModel = require('../models/enums.model');
 
 const Schema = mongoose.Schema;
 
+
+
 const statuseSchema = new Schema({
     status: {
         type: String,
@@ -41,7 +43,6 @@ class factory {
             required: true
         }
 
-
         // if (app.locals.enumsObject.hasOwnProperty([fieldName])) {
         //     paramsOject.value.enums = app.locals.enumsObject[fieldName].theSet;
         // }
@@ -50,24 +51,6 @@ class factory {
     }
 
 }
-
-//sinamdvileSi yvela veli texturia, ertaderti select field=ebs enum unda gavuwero, rom validacia avtomaturad moxdes
-
-
-/*
-if (app.locals && app.locals.enumsObject) {
-    prepareForSchema();
-} else {
-    enumsModel.find(function (err, enums) {
-        if (err) return console.error(err);
-        let myEnums = {}
-        enums.forEach((el) => myEnums[el.name] = {"table": el.table, "theSet": el.theSet})
-
-        app.locals.enumsObject = myEnums;
-        prepareForSchema();
-    });
-}
-*/
 
 
 const allNestedSchemas = {};
@@ -136,9 +119,9 @@ allNestedSchemas["11_5_4"] = factory.generateTextFieldSchema("11_5_4");
 
 
 const metadataSchema = new Schema({
-        "user": {type: Schema.Types.ObjectId, ref: 'User'},
+        "user": {type: Schema.Types.ObjectId, ref: 'User',  index: true},
         "statuses": [statuseSchema],
-        "curStatus": {type: String, required: true},
+        "curStatus": {type: String, required: true,  index: true},
         "1_1": allNestedSchemas["1_1"],
         "1_2": [allNestedSchemas["1_2"]],
         "1_3": allNestedSchemas["1_3"],
@@ -213,7 +196,7 @@ const metadataSchema = new Schema({
         timestamps: true
     },
 );
-
+//metadataSchema.set('toJSON', { virtuals: true });
 
 const Metadata = mongoose.model('Metadata', metadataSchema);
 

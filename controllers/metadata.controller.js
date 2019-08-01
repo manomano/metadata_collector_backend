@@ -29,13 +29,13 @@ exports.update = function (req, res, next) {
 
 
 
-        for (let i = 0; i < field.comments.length; i++) {
+        for (let i = 0; i < paramObject.comments.length; i++) {
             if(!paramObject.comments[i]._id){
                 doc.comments.push(paramObject.comments[i]);
             }else{
                 //update
-                let found = doc.comments.id(paramObject.comments[i]._id);
-                found.value = paramObject.comments[i].value;
+                let found = doc.comments.find(x=>x._id==paramObject.comments[i]._id);
+                found.comment = paramObject.comments[i].comment;
                 if(paramObject.comments[i].toDelete){
                     doc.comments.id(paramObject.comments[i]._id).remove;
                 }
@@ -47,32 +47,50 @@ exports.update = function (req, res, next) {
 
 
 
-    MetadataModel.findById(_id, function (err,document) {
+    MetadataModel.find({_id:_id, user:req.user._id}, function (err,document) {
 
+        let thedoc = document[0].toObject();
         for(let field in params.fields){
+
             if(params.fields[field].length){
                 for (let i = 0; i < params.fields[field].length ; i++) {
-                    //!!!!!!! aqaa gasasworebeli!!!!!!!!!
-                    let doc = document[field].id(params.fields[field][i]._id);
-                    doc.value = params.fields[field][i].value;
 
-                    elaborateComments(doc, field, field[i]);
+                    if(params.fields[field][i]._id){
+                        let doc = thedoc[field].find(x=>x._id==params.fields[field][i]._id);
+                        doc.value = params.fields[field][i].value;
+                        elaborateComments(doc, field, params.fields[field][i]);
+                    }else{
+                        thedoc[field].push(params.fields[field][i])
+                    }
+
                 }
             }else{
-                let doc = document[field].id(params.fields[field]._id);
+
+
+                let doc = thedoc[field];
                 doc.value = params.fields[field].value;
                 elaborateComments(doc, field, params.fields[field]);
             }
         }
 
-        document.save(function (err,obj) {
+       /* document.save(function (err,obj) {
             if (err){
                 next(err);
             } else{
                 res.send(obj);
             }
+        })*/
+
+
+        new MetadataModel(thedoc).save(function (err,obj) {
+            if(err){
+                next(err)
+            }else{
+                res.send(obj);
+            }
+
         })
-        //res.send(obj);
+
     })
 
 }
