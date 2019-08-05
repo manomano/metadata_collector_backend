@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 mongoose.Promise = require('q').Promise;
 let validator = require('validator');
 const enumsModel = require('../models/enums.model');
+const FieldDescModel = require('../models/metadata_fields.model');
 
 
 const Schema = mongoose.Schema;
@@ -54,151 +55,6 @@ class factory {
 }
 
 
-const allNestedSchemas = {};
-
-allNestedSchemas["1_1"] = factory.generateTextFieldSchema("1_1");
-allNestedSchemas["1_2"] = factory.generateTextFieldSchema("1_2");
-allNestedSchemas["1_3"] = factory.generateTextFieldSchema("1_3");
-allNestedSchemas["1_4"] = factory.generateTextFieldSchema("1_4");
-allNestedSchemas["1_5"] = factory.generateTextFieldSchema("1_5");
-allNestedSchemas["1_6"] = factory.generateTextFieldSchema("1_6");
-allNestedSchemas["1_7"] = factory.generateTextFieldSchema("1_7");
-allNestedSchemas["1_8"] = factory.generateTextFieldSchema("1_8");
-allNestedSchemas["1_9_1"] = factory.generateTextFieldSchema("1_9_1");
-allNestedSchemas["1_9_3"] = factory.generateTextFieldSchema("1_9_3");
-allNestedSchemas["1_9_4"] = factory.generateTextFieldSchema("1_9_4");
-allNestedSchemas["1_10_1"] = factory.generateTextFieldSchema("1_10_1");
-allNestedSchemas["1_10_2"] = factory.generateTextFieldSchema("1_10_2");
-allNestedSchemas["2_1"] = factory.generateTextFieldSchema("2_1");
-allNestedSchemas["3_1_1"] = factory.generateTextFieldSchema("3_1_1");
-allNestedSchemas["3_1_2"] = factory.generateTextFieldSchema("3_1_2");
-allNestedSchemas["3_1_3"] = factory.generateTextFieldSchema("3_1_3");
-allNestedSchemas["3_1_4"] = factory.generateTextFieldSchema("3_1_4");
-allNestedSchemas["3_2_1"] = factory.generateTextFieldSchema("3_2_1");
-allNestedSchemas["3_2_2"] = factory.generateTextFieldSchema("3_2_2");
-allNestedSchemas["3_2_3"] = factory.generateTextFieldSchema("3_2_3");
-allNestedSchemas["3_2_4"] = factory.generateTextFieldSchema("3_2_4");
-allNestedSchemas["3_4"] = factory.generateTextFieldSchema("3_4");
-allNestedSchemas["4_1_1"] = factory.generateTextFieldSchema("4_1_1");
-allNestedSchemas["4_1_2"] = factory.generateTextFieldSchema("4_1_2");
-allNestedSchemas["4_2_1"] = factory.generateTextFieldSchema("4_2_1");
-allNestedSchemas["4_2_2"] = factory.generateTextFieldSchema("4_2_2");
-allNestedSchemas["4_3"] = factory.generateTextFieldSchema("4_3");
-allNestedSchemas["5_1"] = factory.generateTextFieldSchema("5_1");
-allNestedSchemas["5_2"] = factory.generateTextFieldSchema("5_2");
-allNestedSchemas["6_1"] = factory.generateTextFieldSchema("6_1");
-allNestedSchemas["6_2_1"] = factory.generateTextFieldSchema("6_2_1");
-allNestedSchemas["6_2_2"] = factory.generateTextFieldSchema("6_2_2");
-allNestedSchemas["6_3"] = factory.generateTextFieldSchema("6_3");
-allNestedSchemas["6_4"] = factory.generateTextFieldSchema("6_4");
-allNestedSchemas["7_1"] = factory.generateTextFieldSchema("7_1");
-allNestedSchemas["7_2"] = factory.generateTextFieldSchema("7_2");
-allNestedSchemas["7_3_1"] = factory.generateTextFieldSchema("7_3_1");
-allNestedSchemas["7_3_2"] = factory.generateTextFieldSchema("7_3_2");
-allNestedSchemas["8_1_1"] = factory.generateTextFieldSchema("8_1_1");
-allNestedSchemas["8_1_2"] = factory.generateTextFieldSchema("8_1_2");
-allNestedSchemas["8_1_3"] = factory.generateTextFieldSchema("8_1_3");
-allNestedSchemas["8_1_4"] = factory.generateTextFieldSchema("8_1_4");
-allNestedSchemas["8_2"] = factory.generateTextFieldSchema("8_2");
-allNestedSchemas["9_1"] = factory.generateTextFieldSchema("9_1");
-allNestedSchemas["9_2"] = factory.generateTextFieldSchema("9_2");
-allNestedSchemas["9_3"] = factory.generateTextFieldSchema("9_3");
-allNestedSchemas["9_4"] = factory.generateTextFieldSchema("9_4");
-allNestedSchemas["10.1"] = factory.generateTextFieldSchema("10.1");
-allNestedSchemas["10.2"] = factory.generateTextFieldSchema("10.2");
-allNestedSchemas["10.3"] = factory.generateTextFieldSchema("10.3");
-allNestedSchemas["10.4"] = factory.generateTextFieldSchema("10.4");
-allNestedSchemas["11_1_1"] = factory.generateTextFieldSchema("11_1_1");
-allNestedSchemas["11_1_2"] = factory.generateTextFieldSchema("11_1_2");
-allNestedSchemas["11_2"] = factory.generateTextFieldSchema("11_2");
-allNestedSchemas["11_3"] = factory.generateTextFieldSchema("11_3");
-allNestedSchemas["11_4"] = factory.generateTextFieldSchema("11_4");
-allNestedSchemas["11_5_1"] = factory.generateTextFieldSchema("11_5_1");
-allNestedSchemas["11_5_2"] = factory.generateTextFieldSchema("11_5_2");
-allNestedSchemas["11_5_3"] = factory.generateTextFieldSchema("11_5_3");
-allNestedSchemas["11_5_4"] = factory.generateTextFieldSchema("11_5_4");
-
-
-const metadataSchema = new Schema({
-        "user": {type: Schema.Types.ObjectId, ref: 'User',  index: true},
-        "statuses": [statuseSchema],
-        "curStatus": {type: String, required: true,  index: true},
-        "1_1": allNestedSchemas["1_1"],
-        "1_2": [allNestedSchemas["1_2"]],
-        "1_3": allNestedSchemas["1_3"],
-        "1_4": allNestedSchemas["1_4"],
-        "1_5": allNestedSchemas["1_5"],
-        "1_6": [allNestedSchemas["1_6"]],
-        "1_7": allNestedSchemas["1_7"],
-        "1_8": allNestedSchemas["1_8"],
-        "1_9": [{
-            "1_9_1": allNestedSchemas["1_9_1"],
-            "1_9_3": allNestedSchemas["1_9_3"],
-            "1_9_4": allNestedSchemas["1_9_4"]
-        }],
-        "1_10": [{
-            "1_10_1": allNestedSchemas["1_10_1"],
-            "1_10_2": allNestedSchemas["1_10_2"]
-        }],
-        "2_1": allNestedSchemas["2_1"],
-        "3_1_1": allNestedSchemas["3_1_1"],
-        "3_1_2": allNestedSchemas["3_1_2"],
-        "3_1_3": allNestedSchemas["3_1_3"],
-        "3_1_4": allNestedSchemas["3_1_4"],
-        "3_2_1": allNestedSchemas["3_2_1"],
-        "3_2_2": allNestedSchemas["3_2_2"],
-        "3_2_3": allNestedSchemas["3_2_3"],
-        "3_2_4": allNestedSchemas["3_2_4"],
-        "3_4": [allNestedSchemas["3_4"]],
-        "4_1_1": allNestedSchemas["4_1_1"],
-        "4_1_2": allNestedSchemas["4_1_2"],
-        "4_2_1": allNestedSchemas["4_2_1"],
-        "4_2_2": allNestedSchemas["4_2_2"],
-        "4_3": allNestedSchemas["4_3"],
-        "5_1": allNestedSchemas["5_1"],
-        "5_2": allNestedSchemas["5_2"],
-        "6_1": [allNestedSchemas["6_1"]],
-        "6_2_1": [allNestedSchemas["6_2_1"]],
-        "6_2_2": [allNestedSchemas["6_2_2"]],
-        "6_3": allNestedSchemas["6_3"],
-        "6_4": allNestedSchemas["6_4"],
-        "7_1": allNestedSchemas["7_1"],
-        "7_2": allNestedSchemas["7_2"],
-        "7_3_1": allNestedSchemas["7_3_1"],
-        "7_3_2": allNestedSchemas["7_3_2"],
-        "8_1_1": allNestedSchemas["8_1_1"],
-        "8_1_2": [allNestedSchemas["8_1_2"]],
-        "8_1_3": [allNestedSchemas["8_1_3"]],
-        "8_1_4": [allNestedSchemas["8_1_4"]],
-        "8_2": allNestedSchemas["8_2"],
-        "9_1": [allNestedSchemas["9_1"]],
-        "9_2": [allNestedSchemas["9_2"]],
-        "9_3": allNestedSchemas["9_3"],
-        "9_4": [allNestedSchemas["9_4"]],
-        "10": [{
-            "10.1": allNestedSchemas["10.1"],
-            "10.2": allNestedSchemas["10.2"],
-            "10.3": allNestedSchemas["10.3"],
-            "10.4": allNestedSchemas["10.4"]
-        }],
-        "11_1_1": allNestedSchemas["11_1_1"],
-        "11_1_2": allNestedSchemas["11_1_2"],
-        "11_2": allNestedSchemas["11_2"],
-        "11_3": allNestedSchemas["11_3"],
-        "11_4": allNestedSchemas["11_4"],
-        "11_5": [{
-            "11_5_1": allNestedSchemas["11_5_1"],
-            "11_5_2": allNestedSchemas["11_5_2"],
-            "11_5_3": allNestedSchemas["11_5_3"],
-            "11_5_4": allNestedSchemas["11_5_4"]
-        }]
-
-    }, {
-        timestamps: true
-    },
-);
-
-
 const fieldSchema = new Schema({
     record:{ref:'Doc', type: Schema.Types.ObjectId, index:true},
     user:{ref:'User', type: Schema.Types.ObjectId, index:true},
@@ -209,7 +65,40 @@ const fieldSchema = new Schema({
 }, {timestamps: true})
 
 
-const Field = mongoose.model('Field', fieldSchema);
 
-module.exports = Field;
+fieldSchema.pre('validate', async function(next) {
+
+
+    const fieldDescArr = await FieldDescModel.find({num:(this.key.replace("_","."))});
+    const fieldDesc = fieldDescArr[0]._doc?fieldDescArr[0]._doc:fieldDescArr[0];
+
+    if(fieldDesc.fieldType.substring(0,5)=="TIME_"){
+        let convertedToDate = new Date(req.field_value);
+        if(convertedToDate=='Invalid Date'){
+            next(new Error('this value must be of date type'));
+        }
+    }
+
+
+    if(fieldDesc.fieldType.substring(0,7)=='SELECT_'){
+
+        const enums = await enumsModel.find({name:this.key});
+        const theEnum = enums[0]._doc?enums[0]._doc:enums[0];
+        const theSet = new Set(theEnum.theSet);
+
+        if(!theSet.has(this.value)){
+            next(new Error('this field is not from allowed values'));
+        }
+    }
+
+
+    next();
+
+
+
+});
+
+const FieldValueModel = mongoose.model('FieldValue', fieldSchema);
+
+module.exports = FieldValueModel;
 

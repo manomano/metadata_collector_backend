@@ -12,9 +12,9 @@ router.get('/', function(req, res, next) {
 
 
 
-router.post('/create', metadataController.createMetadata);
+router.post('/create', metadataController.createMetadataDoc);
 
-router.put('/update/:id', metadataController.update);
+router.put('/update/:id', metadataController.updateAddFieldValue);
 
 //router.put('/update:id', metadataController.update);
 //router.delete('/delete:id', metadataController.delete);

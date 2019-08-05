@@ -1,24 +1,89 @@
 var express = require('express');
-const MetadataModel = require('../models/metadata.model');
+const FieldDescModel = require('../models/metadata_fields.model');
+const selectFields = require('../models/enums.model');
+const FieldValueModel = require('../models/metadata.model');
+const theDoc = require('../models/thedoc.model');
 
 
-exports.createMetadata = function (req, res, next) {
+exports.createMetadataDoc = async function (req, res, next) {
 
-    const params = {...req.body.fields, curStatus: req.body.curStatus,  user:req.user._id}
 
-    try {
-        new MetadataModel(params).save(function (err,obj) {
-            if (err){
-                next(err);
-            } else{
-                res.send(obj);
-            }
-        });
-    }catch (e) {
-        console.log("this is my error", e)
-    }
+    let newtheDoc = await new theDoc({curStatus: req.body.curStatus,  user:req.user._id, statuses:[{
+            status:req.body.curStatus,  user:req.user._id
+        }]}).save();
+
+    res.send(newtheDoc);
 
 }
+
+
+exports.updateAddFieldValue = async function(req, res,next){
+
+    //uflebebis sakitxi maqvs mosagvarebeli:
+    //eseigi damatebis ufleba aqvs im momxmarebels romelic doc documentshia userad, an igive grooup_id-is mqone tips
+    //redaqtirebis ufleba aqvs igives, xolo comentarebis redaqtirebis ufleba aqvs mxolod admins
+
+
+    const curDoc = await theDoc.findById(req.params.id)
+    const userOfSameGroup = req.user.groupId == curDoc.user.groupId
+
+
+    if(!req.field_unic_id){
+
+        if(!userOfSameGroup){
+            next(new Error('You are not allowed to create record'));
+        }
+
+        const val = await new FieldValueModel({
+            record:req.params.id,
+            user:req.user._id,
+            key:req.body.key,
+            value:"დასრულებული"
+        }).save();
+
+        res.send(val);
+
+    }else{
+
+        const found = await FieldValueModel.findById(req.body.field_unic_id);
+
+        if(req.body.comments){
+            if(req.user.role=='admin'){
+                next(new Error('You are not allowed to add/edit comment'));
+            }
+
+            for(let comment in req.body.comments){
+                if(comment._id){
+                    //update
+                }else{
+                    //insert
+                }
+            }
+
+        }else{
+            if(!userOfSameGroup){
+                next(new Error('You are not allowed to create record'));
+            }
+
+        }
+
+
+        found.value = req.body.value;
+
+
+        await found.save()
+        res.send(found);
+
+
+    }
+
+
+
+}
+
+
+
+
 
 exports.update = function (req, res, next) {
 

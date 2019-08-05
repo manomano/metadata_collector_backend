@@ -25,6 +25,20 @@ const docSchema = new Schema({
 
 },{timestamps: true})
 
+
+
+
+const autoPopulateUser = function (next) {
+    this.populate('user');
+    next();
+};
+
+metadataFieldsSchema
+    .pre('findOne', autoPopulateUser)
+    .pre('find', autoPopulateUser)
+
+
+
 const Doc = mongoose.model('Doc', docSchema);
 
 module.exports = Doc;
