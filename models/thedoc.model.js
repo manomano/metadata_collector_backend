@@ -33,7 +33,7 @@ const autoPopulateUser = function (next) {
     next();
 };
 
-metadataFieldsSchema
+docSchema
     .pre('findOne', autoPopulateUser)
     .pre('find', autoPopulateUser)
 

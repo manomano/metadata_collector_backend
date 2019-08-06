@@ -28,7 +28,7 @@ exports.updateAddFieldValue = async function(req, res,next){
     const userOfSameGroup = req.user.groupId == curDoc.user.groupId
 
 
-    if(!req.field_unic_id){
+    if(!req.body.field_unic_id){
 
         if(!userOfSameGroup){
             next(new Error('You are not allowed to create record'));
@@ -48,39 +48,42 @@ exports.updateAddFieldValue = async function(req, res,next){
         const found = await FieldValueModel.findById(req.body.field_unic_id);
 
         if(req.body.comments){
-            if(req.user.role=='admin'){
+            if(req.user.role!=='admin'){
                 next(new Error('You are not allowed to add/edit comment'));
+                return;
             }
 
-            for(let comment in req.body.comments){
+            for(let comment of req.body.comments){
                 if(comment._id){
-                    //update
+                    if(comment.toDelete){
+                        let index = found.comments.findIndex(x=>x._id==comment._id);
+                        found.comments.splice(index,1);
+                        //await found.comments.findOneAndDelete({_id:comment._id});
+                    }else{
+                        let foundComment = found.comments.find(x=>x._id==comment._id);
+                        foundComment.comment = comment.comment;
+                    }
+
                 }else{
-                    //insert
+                    comment.user = req.user._id;
+                    found.comments.push(comment);
                 }
             }
 
         }else{
             if(!userOfSameGroup){
                 next(new Error('You are not allowed to create record'));
+                return;
             }
-
         }
 
-
         found.value = req.body.value;
-
-
         await found.save()
         res.send(found);
 
-
     }
 
-
-
 }
-
 
 
 

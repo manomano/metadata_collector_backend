@@ -68,30 +68,31 @@ const fieldSchema = new Schema({
 
 fieldSchema.pre('validate', async function(next) {
 
+    if(this.isModified('value')) {
 
-    const fieldDescArr = await FieldDescModel.find({num:(this.key.replace("_","."))});
-    const fieldDesc = fieldDescArr[0]._doc?fieldDescArr[0]._doc:fieldDescArr[0];
+        const fieldDescArr = await FieldDescModel.find({num: (this.key.replace("_", "."))});
+        const fieldDesc = fieldDescArr[0]._doc ? fieldDescArr[0]._doc : fieldDescArr[0];
 
-    if(fieldDesc.fieldType.substring(0,5)=="TIME_"){
-        let convertedToDate = new Date(req.field_value);
-        if(convertedToDate=='Invalid Date'){
-            next(new Error('this value must be of date type'));
+        if (fieldDesc.fieldType.substring(0, 5) == "TIME_") {
+            let convertedToDate = new Date(req.field_value);
+            if (convertedToDate == 'Invalid Date') {
+                next(new Error('this value must be of date type'));
+            }
         }
-    }
 
 
-    if(fieldDesc.fieldType.substring(0,7)=='SELECT_'){
+        if (fieldDesc.fieldType.substring(0, 7) == 'SELECT_') {
 
-        const enums = await enumsModel.find({name:this.key});
-        const theEnum = enums[0]._doc?enums[0]._doc:enums[0];
-        const theSet = new Set(theEnum.theSet);
+            const enums = await enumsModel.find({name: this.key});
+            const theEnum = enums[0]._doc ? enums[0]._doc : enums[0];
+            const theSet = new Set(theEnum.theSet);
 
-        if(!theSet.has(this.value)){
-            next(new Error('this field is not from allowed values'));
+            if (!theSet.has(this.value)) {
+                next(new Error('this field is not from allowed values'));
+            }
         }
+
     }
-
-
     next();
 
 
