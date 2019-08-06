@@ -16,8 +16,12 @@ router.post('/create', metadataController.createMetadataDoc);
 
 router.put('/update/:id', metadataController.updateAddFieldValue);
 
+router.put('/updateDoc/:id', metadataController.updateWholeDoc);
+
+router.get('/', metadataController.getMetadataList)
+
 //router.put('/update:id', metadataController.update);
 //router.delete('/delete:id', metadataController.delete);
-//router.get('/:id', metadataController.getById);
+router.get('/:id', metadataController.getById);
 
 module.exports = router;

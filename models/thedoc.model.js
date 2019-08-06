@@ -19,6 +19,8 @@ const statusSchema = new Schema({
 
 
 const docSchema = new Schema({
+    title:String,
+    desc:String,
     curStatus:{type:String, index:true, enum: ['template', 'metadata', 'sent', 'commencedCorrection', 'corrected']},
     statuses:[statusSchema],
     user: {type: Schema.Types.ObjectId, ref: 'User',  index: true},

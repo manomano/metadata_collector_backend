@@ -25,7 +25,7 @@ exports.updateAddFieldValue = async function(req, res,next){
 
 
     const curDoc = await theDoc.findById(req.params.id)
-    const userOfSameGroup = req.user.groupId == curDoc.user.groupId
+    const userOfSameGroup = req.user.groupId == curDoc.user.groupId;
 
 
     if(!req.body.field_unic_id){
@@ -75,9 +75,21 @@ exports.updateAddFieldValue = async function(req, res,next){
                 next(new Error('You are not allowed to create record'));
                 return;
             }
+
+            if(req.body.key=="1_1" || req.body.key=="1_3" ){
+                let prop = "title";
+                if(req.body.key=="1_3"){
+                    prop = "desc"
+                }
+                curDoc[prop] = req.body.value;
+                await curDoc.save()
+            }
+
+
+
+            found.value = req.body.value;
         }
 
-        found.value = req.body.value;
         await found.save()
         res.send(found);
 
@@ -88,77 +100,37 @@ exports.updateAddFieldValue = async function(req, res,next){
 
 
 
-exports.update = function (req, res, next) {
+exports.getMetadataList = async function(req,res, next) {
+    if(req.user.role=='user'){
+        //get only users docs paging
+        let pageSize = 20;
+        //theDoc.find({"user":req.user._id, "_id"> 1}).limit(pageSize);
+        //theDoc.find({'_id'> last_id}). limit(10)
 
-    const _id = req.params.id;
-    const params = {...req.body, user:req.user._id};
-
-    const elaborateComments = (doc, field, paramObject)=>{
+    }
+}
 
 
+exports.getById = async function(req,res, next) {
 
-        for (let i = 0; i < paramObject.comments.length; i++) {
-            if(!paramObject.comments[i]._id){
-                doc.comments.push(paramObject.comments[i]);
-            }else{
-                //update
-                let found = doc.comments.find(x=>x._id==paramObject.comments[i]._id);
-                found.comment = paramObject.comments[i].comment;
-                if(paramObject.comments[i].toDelete){
-                    doc.comments.id(paramObject.comments[i]._id).remove;
-                }
-            }
+    if(req.user.role=='user'){
+        const doc = await theDoc.findById(req.params.id);
+        if(req.user.groupId !==doc.user.groupId){
+            next(new Error('You are not allowed to this recourse'));
         }
-
-
     }
 
 
+    try{
+        const result = await FieldValueModel.findOne({record:req.params.id}).sort('key');
+        res.send(result)
+    }catch (e) {
+        next(e);
+    }
 
-    MetadataModel.find({_id:_id, user:req.user._id}, function (err,document) {
-
-        let thedoc = document[0].toObject();
-        for(let field in params.fields){
-
-            if(params.fields[field].length){
-                for (let i = 0; i < params.fields[field].length ; i++) {
-
-                    if(params.fields[field][i]._id){
-                        let doc = thedoc[field].find(x=>x._id==params.fields[field][i]._id);
-                        doc.value = params.fields[field][i].value;
-                        elaborateComments(doc, field, params.fields[field][i]);
-                    }else{
-                        thedoc[field].push(params.fields[field][i])
-                    }
-
-                }
-            }else{
+}
 
 
-                let doc = thedoc[field];
-                doc.value = params.fields[field].value;
-                elaborateComments(doc, field, params.fields[field]);
-            }
-        }
-
-       /* document.save(function (err,obj) {
-            if (err){
-                next(err);
-            } else{
-                res.send(obj);
-            }
-        })*/
-
-
-        new MetadataModel(thedoc).save(function (err,obj) {
-            if(err){
-                next(err)
-            }else{
-                res.send(obj);
-            }
-
-        })
-
-    })
+exports.updateWholeDoc = async function(req, res, next) {
 
 }

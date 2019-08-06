@@ -59,7 +59,7 @@ const fieldSchema = new Schema({
     record:{ref:'Doc', type: Schema.Types.ObjectId, index:true},
     user:{ref:'User', type: Schema.Types.ObjectId, index:true},
     comments:[factory.generateComment()],
-    key:String,
+    key:{type:String, index:true},
     value:String,
     objectValue:Object
 }, {timestamps: true})
