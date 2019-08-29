@@ -1,8 +1,10 @@
 var express = require('express');
 const FieldDescModel = require('../models/metadata_fields.model');
 const selectFields = require('../models/enums.model');
-const FieldValueModel = require('../models/metadata.model');
+const FieldValue = require('../models/metadata.model');
 const theDoc = require('../models/thedoc.model');
+//const { ObjectId } = require('mongodb');
+
 
 
 exports.createMetadataDoc = async function (req, res, next) {
@@ -17,7 +19,7 @@ exports.createMetadataDoc = async function (req, res, next) {
 }
 
 
-exports.updateAddFieldValue = async function(req, res,next){
+const updateAddFieldValue = async function(req, res,next){
 
     //uflebebis sakitxi maqvs mosagvarebeli:
     //eseigi damatebis ufleba aqvs im momxmarebels romelic doc documentshia userad, an igive grooup_id-is mqone tips
@@ -34,7 +36,7 @@ exports.updateAddFieldValue = async function(req, res,next){
             next(new Error('You are not allowed to create record'));
         }
 
-        const val = await new FieldValueModel({
+        const val = await new FieldValue.Model({
             record:req.params.id,
             user:req.user._id,
             key:req.body.key,
@@ -45,7 +47,7 @@ exports.updateAddFieldValue = async function(req, res,next){
 
     }else{
 
-        const found = await FieldValueModel.findById(req.body.field_unic_id);
+        const found = await FieldValue.Model.findById(req.body.field_unic_id);
 
         if(req.body.comments){
             if(req.user.role!=='admin'){
@@ -96,7 +98,7 @@ exports.updateAddFieldValue = async function(req, res,next){
     }
 
 }
-
+exports.updateAddFieldValue = updateAddFieldValue;
 
 
 
@@ -122,7 +124,7 @@ exports.getById = async function(req,res, next) {
 
 
     try{
-        const result = await FieldValueModel.findOne({record:req.params.id}).sort('key');
+        const result = await FieldValue.Model.findOne({record:req.params.id}).sort('key');
         res.send(result)
     }catch (e) {
         next(e);
@@ -132,5 +134,88 @@ exports.getById = async function(req,res, next) {
 
 
 exports.updateWholeDoc = async function(req, res, next) {
+
+
+    const insertions = [];
+    const deletions = [];
+    const updates = [];
+    const fieldValues = req.body.fieldValues;
+/*
+    {
+        record: req.params.id,
+            user: req.user._id,
+        key: source.key,
+        value: source.value,
+        _id: source._id
+    }*/
+
+
+    const prepareData = (source) => {
+        if (!source._id) {
+            insertions.push({
+                record: req.params.id,
+                user: req.user._id,
+                key: source.key,
+                value: source.value
+            })
+        } else {
+            if (source.toDelete) {
+                deletions.push(source._id);
+            } else {
+                updates.push(
+                    {
+                        value: source.value,
+                        _id: source._id,
+                        record: req.params.id,
+                        user: req.user._id,
+                        key: source.key
+                    }
+                    /*{ "updateOne": {
+                            "filter": {
+                                "_id": ObjectId(source._id) }
+                        },
+                        "update": { $set: { "value": source.value }},
+                        'upsert': true
+                    }*/
+
+                    )
+            }
+        }
+    }
+
+
+    for (const prop in fieldValues) {
+        //generate updates, generate deletes, generate insertions
+        if (fieldValues[prop].map) {
+            fieldValues[prop].forEach(x => {
+                prepareData(x)
+                return x;
+            })
+        } else {
+            prepareData(fieldValues[prop])
+        }
+    }
+
+    //let session = await FieldValue.dbConnection.startSession();
+
+
+    //session.startTransaction();
+
+    try {
+        //await FieldValue.Model.updateMany(updates); ///es araa swori!
+
+        if(updates.length){
+            await FieldValue.Model.upsertMany(updates, ['_id','record','user']);
+        }
+
+
+        await FieldValue.Model.insertMany(insertions);
+
+        await FieldValue.Model.deleteMany({_id: {$in: deletions}});
+    }catch (e) {
+
+    }
+    res.send('everything is ok');
+
 
 }

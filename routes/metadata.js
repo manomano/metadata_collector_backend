@@ -1,5 +1,6 @@
 var express = require('express');
 const metadataController = require('../controllers/metadata.controller');
+const asyncMiddleware = require('../utils/asyncMiddleware');
 
 
 var router = express.Router();
@@ -16,7 +17,7 @@ router.post('/create', metadataController.createMetadataDoc);
 
 router.put('/update/:id', metadataController.updateAddFieldValue);
 
-router.put('/updateDoc/:id', metadataController.updateWholeDoc);
+router.put('/updateDoc/:id', asyncMiddleware(metadataController.updateWholeDoc));
 
 router.get('/', metadataController.getMetadataList)
 

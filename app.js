@@ -9,15 +9,27 @@ const database = require('./database');
 const jwt=require('jsonwebtoken')
 const user = require('./models/user.model');
 const enumsModel = require('./models/enums.model')
+const fieldsFlat =require('./models/metadata_fields.model');
+
 
 
 
 
 app = express();
 
+
+(async () => {
+  globalEnums = await enumsModel.find();
+  allFieldsFlat = await fieldsFlat.find();
+  allFieldsFlatObject = {};
+  allFieldsFlat.forEach(x=>allFieldsFlatObject[x.num]=x)
+})()
+
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var metadataRouter = require('./routes/metadata');
+var formRouter = require('./routes/form');
 
 
 // view engine setup
@@ -69,6 +81,7 @@ app.use(function(req,res,next){
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/metadata', metadataRouter);
+app.use('/form', formRouter)
 
 
 // catch 404 and forward to error handler

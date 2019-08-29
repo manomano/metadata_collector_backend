@@ -54,7 +54,7 @@ exports.login = function (req,res, next) {
             }
         })
     }).catch((err)=>{
-        res.status(400).json({message:'Invalid Password/Username'});
+        res.status(400).json({message:'Invalid Password/Username'+err});
     })
 
 }

@@ -3,8 +3,9 @@ mongoose.Promise = require('q').Promise;
 let validator = require('validator');
 const enumsModel = require('../models/enums.model');
 const FieldDescModel = require('../models/metadata_fields.model');
+const upsertMany = require('@meanie/mongoose-upsert-many');
 
-
+mongoose.plugin(upsertMany);
 const Schema = mongoose.Schema;
 
 
@@ -62,20 +63,29 @@ const fieldSchema = new Schema({
     key:{type:String, index:true},
     value:String,
     objectValue:Object
-}, {timestamps: true})
+}, {timestamps: true});
+
+
+
+//fieldSchema.plugin(upsertMany);
 
 
 
 fieldSchema.pre('validate', async function(next) {
 
+
     if(this.isModified('value')) {
 
         const fieldDescArr = await FieldDescModel.find({num: (this.key.replace("_", "."))});
-        const fieldDesc = fieldDescArr[0]._doc ? fieldDescArr[0]._doc : fieldDescArr[0];
+
+        let feildDescPre = allFieldsFlatObject[this.key.replace("_", ".")];
+
+        const fieldDesc = feildDescPre._doc ? feildDescPre._doc : feildDescPre;
 
         if (fieldDesc.fieldType.substring(0, 5) == "TIME_") {
             let convertedToDate = new Date(req.field_value);
             if (convertedToDate == 'Invalid Date') {
+                const enums = await enumsModel.find({name: this.key})
                 next(new Error('this value must be of date type'));
             }
         }
@@ -83,7 +93,6 @@ fieldSchema.pre('validate', async function(next) {
 
         if (fieldDesc.fieldType.substring(0, 7) == 'SELECT_') {
 
-            const enums = await enumsModel.find({name: this.key});
             const theEnum = enums[0]._doc ? enums[0]._doc : enums[0];
             const theSet = new Set(theEnum.theSet);
 
@@ -101,5 +110,6 @@ fieldSchema.pre('validate', async function(next) {
 
 const FieldValueModel = mongoose.model('FieldValue', fieldSchema);
 
-module.exports = FieldValueModel;
+exports.Model = FieldValueModel;
 
+exports.dbConnection = mongoose.connection;

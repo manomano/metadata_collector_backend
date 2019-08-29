@@ -14,3 +14,4 @@ const enumsSchema = new Schema({
 
 const enumModel = mongoose.model('SeparatedEnum', enumsSchema)
 module.exports = enumModel;
+

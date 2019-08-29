@@ -6,7 +6,13 @@ const metadata_fields = require('./models/metadata_fields.model');
 exports.generateFields = function (req, res, next) {
 
 
-
+    metadata_fields.countDocuments(function (err, count) {
+        if(count>0){
+            return;
+        }else{
+            const result = saveSequentially();
+        }
+    });
     const allNodesFromBottom = [];
     const root1 = new metadata_fields({
         "definition": "იდენტიფიკაცია",
@@ -956,7 +962,7 @@ exports.generateFields = function (req, res, next) {
 
     }
 
-    const result = saveSequentially();
+    //const result = saveSequentially();
 
 
 }
