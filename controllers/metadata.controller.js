@@ -140,17 +140,20 @@ exports.updateWholeDoc = async function(req, res, next) {
     const deletions = [];
     const updates = [];
     const fieldValues = req.body.fieldValues;
-/*
-    {
-        record: req.params.id,
-            user: req.user._id,
-        key: source.key,
-        value: source.value,
-        _id: source._id
-    }*/
-
 
     const prepareData = (source) => {
+
+        const newRow = {
+            updateOne: {
+                        filter: { _id: source._id },
+                        //id: source._id,
+                        update: { $set: { value: source.value } },
+                        options:{runValidators: true}
+                    }
+                }
+
+
+
         if (!source._id) {
             insertions.push({
                 record: req.params.id,
@@ -163,6 +166,7 @@ exports.updateWholeDoc = async function(req, res, next) {
                 deletions.push(source._id);
             } else {
                 updates.push(
+                   // newRow
                     {
                         value: source.value,
                         _id: source._id,
@@ -170,14 +174,6 @@ exports.updateWholeDoc = async function(req, res, next) {
                         user: req.user._id,
                         key: source.key
                     }
-                    /*{ "updateOne": {
-                            "filter": {
-                                "_id": ObjectId(source._id) }
-                        },
-                        "update": { $set: { "value": source.value }},
-                        'upsert': true
-                    }*/
-
                     )
             }
         }
@@ -196,25 +192,20 @@ exports.updateWholeDoc = async function(req, res, next) {
         }
     }
 
-    //let session = await FieldValue.dbConnection.startSession();
 
-
-    //session.startTransaction();
-
-    try {
-        //await FieldValue.Model.updateMany(updates); ///es araa swori!
-
-        if(updates.length){
-            await FieldValue.Model.upsertMany(updates, ['_id','record','user']);
-        }
-
-
-        await FieldValue.Model.insertMany(insertions);
-
-        await FieldValue.Model.deleteMany({_id: {$in: deletions}});
-    }catch (e) {
+    if(updates.length){
+        //await FieldValue.Model.upsertMany(updates, ['_id','record','user','key']);
+        //await FieldValue.Model.bulkWrite(updates);
+        console.log("karada")
+        await Promise.all(updates.map(x => FieldValue.Model.findOneAndUpdate({"_id": x._id},{"value": x.value},{runValidators: true, context:'query'})));
 
     }
+
+
+    await FieldValue.Model.insertMany(insertions);
+
+    await FieldValue.Model.deleteMany({_id: {$in: deletions}});
+
     res.send('everything is ok');
 
 

@@ -5,7 +5,7 @@ const enumsModel = require('../models/enums.model');
 const FieldDescModel = require('../models/metadata_fields.model');
 const upsertMany = require('@meanie/mongoose-upsert-many');
 
-mongoose.plugin(upsertMany);
+//mongoose.plugin(upsertMany);
 const Schema = mongoose.Schema;
 
 
@@ -73,6 +73,7 @@ const fieldSchema = new Schema({
 
 fieldSchema.pre('validate', async function(next) {
 
+    console.log("validate!!!!!");
 
     if(this.isModified('value')) {
 
