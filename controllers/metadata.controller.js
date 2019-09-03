@@ -113,25 +113,55 @@ exports.getMetadataList = async function(req,res, next) {
 }
 
 
-exports.getById = async function(req,res, next) {
+exports.getById = async function (req, res, next) {
 
-    if(req.user.role=='user'){
+    if (req.user.role == 'user') {
         const doc = await theDoc.findById(req.params.id);
-        if(req.user.groupId !==doc.user.groupId){
+        if (req.user.groupId !== doc.user.groupId) {
             next(new Error('You are not allowed to this recourse'));
         }
     }
 
 
-    try{
-        const result = await FieldValue.Model.findOne({record:req.params.id}).sort('key');
-        res.send(result)
-    }catch (e) {
+    try {
+        const result = await FieldValue.Model.find({record: req.params.id});
+        const responseObject = {}
+        result.map(x => {
+            const o = {
+                _id: x["_doc"]._id,
+                key: x.key,
+                value: x.value,
+                objectValue: x.objectValue,
+                comments: x.comments,
+                createdAt: x.createdAt,
+                updatedAt: x.updatedAt
+            };
+            if (responseObject.hasOwnProperty(x.key)) {
+                responseObject[x.key] = responseObject[x.key].map? responseObject[x.key].concat(o):[responseObject[x.key], o];
+            } else {
+                responseObject[x.key] = o;
+            }
+
+            return x
+        });
+        res.send(responseObject)
+    } catch (e) {
         next(e);
     }
 
 }
 
+
+
+/*
+const newRow = {
+    updateOne: {
+        filter: { _id: source._id },
+        //id: source._id,
+        update: { $set: { value: source.value } },
+        options:{runValidators: true}
+    }
+}*/
 
 exports.updateWholeDoc = async function(req, res, next) {
 
@@ -141,50 +171,39 @@ exports.updateWholeDoc = async function(req, res, next) {
     const updates = [];
     const fieldValues = req.body.fieldValues;
 
-    const prepareData = (source) => {
+    const prepareData = (source, key) => {
 
-        const newRow = {
-            updateOne: {
-                        filter: { _id: source._id },
-                        //id: source._id,
-                        update: { $set: { value: source.value } },
-                        options:{runValidators: true}
-                    }
-                }
-
+        const fieldType = allFieldsFlatObject[source.key.replace("_",".")].fieldType
+        const data =  {
+            record: req.params.id,
+            user: req.user._id,
+            key: source.key
+        };
+        if (fieldType == "TREE_FIELD_REPEATABLE"){
+           data.objectValue= {
+               ...source.objectValue
+           }
+        }else{
+            data.value = source.value
+        }
 
 
         if (!source._id) {
-            insertions.push({
-                record: req.params.id,
-                user: req.user._id,
-                key: source.key,
-                value: source.value
-            })
+            insertions.push(data)
         } else {
             if (source.toDelete) {
                 deletions.push(source._id);
             } else {
-                updates.push(
-                   // newRow
-                    {
-                        value: source.value,
-                        _id: source._id,
-                        record: req.params.id,
-                        user: req.user._id,
-                        key: source.key
-                    }
-                    )
+                updates.push(data)
             }
         }
     }
 
 
     for (const prop in fieldValues) {
-        //generate updates, generate deletes, generate insertions
         if (fieldValues[prop].map) {
             fieldValues[prop].forEach(x => {
-                prepareData(x)
+                prepareData(x, prop)
                 return x;
             })
         } else {
