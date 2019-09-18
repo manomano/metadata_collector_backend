@@ -141,7 +141,7 @@ exports.generateFields = function (req, res, next) {
         "num": "1.10",
         "isRequired": "",
         "sample": "",
-        "fieldType": "TREE_FIELD_REPEATABLE_INSIDE",
+        "fieldType": "TREE_FIELD_REPEATABLE",
         "sort":13
 
     }));
@@ -180,6 +180,7 @@ exports.generateFields = function (req, res, next) {
     }));
 
     root1_immidiate_children[root1_immidiate_children.length-2].children = _1_9_children;
+    root1_immidiate_children[root1_immidiate_children.length-2].childNums = ["1.9.1","1.9.3","1.9.4"];
 
     const _1_10_children = [];
 
@@ -208,6 +209,7 @@ exports.generateFields = function (req, res, next) {
 
 
     root1_immidiate_children[root1_immidiate_children.length-1].children = _1_10_children;
+    root1_immidiate_children[root1_immidiate_children.length-1].childNums = ["1.10.1","1.10.2"];
 
     root1.children = root1_immidiate_children;
 
@@ -764,7 +766,7 @@ exports.generateFields = function (req, res, next) {
         "num": "10",
         "isRequired": "",
         "sample": "",
-        "fieldType": "TREE_FIELD_REPEATABLE_INSIDE"
+        "fieldType": "TREE_FIELD_REPEATABLE"
     });
     const arr_10 = [];
     arr_10.push(new metadata_fields({
@@ -805,6 +807,7 @@ exports.generateFields = function (req, res, next) {
     }));
 
     root10.children = arr_10;
+    root10.childNums = ["10.1","10.2","10.3","10.4"];
     allNodesFromBottom.push(...arr_10);
     allNodesFromBottom.push(root10);
 
@@ -889,7 +892,7 @@ exports.generateFields = function (req, res, next) {
         "num": "11.5",
         "isRequired": "",
         "sample": "",
-        "fieldType": "TREE_FIELD_REPEATABLE_INSIDE"
+        "fieldType": "TREE_FIELD_REPEATABLE"
     }));
 
     const _11_5 = []
@@ -932,7 +935,8 @@ exports.generateFields = function (req, res, next) {
         })]);
 
 
-    arr_11[arr_11.length-1].children = _11_5
+    arr_11[arr_11.length-1].children = _11_5;
+    arr_11[arr_11.length-1].childNums = ["11.5.1", "11.5.2","11.5.3", "11.5.4"];
 
     root11.children = arr_11;
 

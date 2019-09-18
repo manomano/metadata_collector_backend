@@ -6,20 +6,21 @@ const theDoc = require('../models/thedoc.model');
 //const { ObjectId } = require('mongodb');
 
 
-
 exports.createMetadataDoc = async function (req, res, next) {
 
 
-    let newtheDoc = await new theDoc({curStatus: req.body.curStatus,  user:req.user._id, statuses:[{
-            status:req.body.curStatus,  user:req.user._id
-        }]}).save();
+    let newtheDoc = await new theDoc({
+        curStatus: req.body.curStatus, user: req.user._id, statuses: [{
+            status: req.body.curStatus, user: req.user._id
+        }]
+    }).save();
 
     res.send(newtheDoc);
 
 }
 
 
-const updateAddFieldValue = async function(req, res,next){
+const updateAddFieldValue = async function (req, res, next) {
 
     //uflebebis sakitxi maqvs mosagvarebeli:
     //eseigi damatebis ufleba aqvs im momxmarebels romelic doc documentshia userad, an igive grooup_id-is mqone tips
@@ -30,63 +31,62 @@ const updateAddFieldValue = async function(req, res,next){
     const userOfSameGroup = req.user.groupId == curDoc.user.groupId;
 
 
-    if(!req.body.field_unic_id){
+    if (!req.body.field_unic_id) {
 
-        if(!userOfSameGroup){
+        if (!userOfSameGroup) {
             next(new Error('You are not allowed to create record'));
         }
 
         const val = await new FieldValue.Model({
-            record:req.params.id,
-            user:req.user._id,
-            key:req.body.key,
-            value:"დასრულებული"
+            record: req.params.id,
+            user: req.user._id,
+            key: req.body.key,
+            value: "დასრულებული"
         }).save();
 
         res.send(val);
 
-    }else{
+    } else {
 
         const found = await FieldValue.Model.findById(req.body.field_unic_id);
 
-        if(req.body.comments){
-            if(req.user.role!=='admin'){
+        if (req.body.comments) {
+            if (req.user.role !== 'admin') {
                 next(new Error('You are not allowed to add/edit comment'));
                 return;
             }
 
-            for(let comment of req.body.comments){
-                if(comment._id){
-                    if(comment.toDelete){
-                        let index = found.comments.findIndex(x=>x._id==comment._id);
-                        found.comments.splice(index,1);
+            for (let comment of req.body.comments) {
+                if (comment._id) {
+                    if (comment.toDelete) {
+                        let index = found.comments.findIndex(x => x._id == comment._id);
+                        found.comments.splice(index, 1);
                         //await found.comments.findOneAndDelete({_id:comment._id});
-                    }else{
-                        let foundComment = found.comments.find(x=>x._id==comment._id);
+                    } else {
+                        let foundComment = found.comments.find(x => x._id == comment._id);
                         foundComment.comment = comment.comment;
                     }
 
-                }else{
+                } else {
                     comment.user = req.user._id;
                     found.comments.push(comment);
                 }
             }
 
-        }else{
-            if(!userOfSameGroup){
+        } else {
+            if (!userOfSameGroup) {
                 next(new Error('You are not allowed to create record'));
                 return;
             }
 
-            if(req.body.key=="1_1" || req.body.key=="1_3" ){
+            if (req.body.key == "1_1" || req.body.key == "1_3") {
                 let prop = "title";
-                if(req.body.key=="1_3"){
+                if (req.body.key == "1_3") {
                     prop = "desc"
                 }
                 curDoc[prop] = req.body.value;
                 await curDoc.save()
             }
-
 
 
             found.value = req.body.value;
@@ -101,9 +101,8 @@ const updateAddFieldValue = async function(req, res,next){
 exports.updateAddFieldValue = updateAddFieldValue;
 
 
-
-exports.getMetadataList = async function(req,res, next) {
-    if(req.user.role=='user'){
+exports.getMetadataList = async function (req, res, next) {
+    if (req.user.role == 'user') {
         //get only users docs paging
         let pageSize = 20;
         //theDoc.find({"user":req.user._id, "_id"> 1}).limit(pageSize);
@@ -137,7 +136,7 @@ exports.getById = async function (req, res, next) {
                 updatedAt: x.updatedAt
             };
             if (responseObject.hasOwnProperty(x.key)) {
-                responseObject[x.key] = responseObject[x.key].map? responseObject[x.key].concat(o):[responseObject[x.key], o];
+                responseObject[x.key] = responseObject[x.key].map ? responseObject[x.key].concat(o) : [responseObject[x.key], o];
             } else {
                 responseObject[x.key] = o;
             }
@@ -152,18 +151,7 @@ exports.getById = async function (req, res, next) {
 }
 
 
-
-/*
-const newRow = {
-    updateOne: {
-        filter: { _id: source._id },
-        //id: source._id,
-        update: { $set: { value: source.value } },
-        options:{runValidators: true}
-    }
-}*/
-
-exports.updateWholeDoc = async function(req, res, next) {
+exports.updateWholeDoc = async function (req, res, next) {
 
 
     const insertions = [];
@@ -173,17 +161,18 @@ exports.updateWholeDoc = async function(req, res, next) {
 
     const prepareData = (source, key) => {
 
-        const fieldType = allFieldsFlatObject[source.key.replace("_",".")].fieldType
-        const data =  {
+        const fieldType = allFieldsFlatObject[source.key.replace("_", ".")].fieldType
+        const data = {
             record: req.params.id,
             user: req.user._id,
-            key: source.key
+            key: source.key,
+            value: null
         };
-        if (fieldType == "TREE_FIELD_REPEATABLE"){
-           data.objectValue= {
-               ...source.objectValue
-           }
-        }else{
+        if (["TREE_FIELD_REPEATABLE", "TREE_FIELD"].indexOf(fieldType) >= 0) {
+            data.objectValue = {
+                ...source.objectValue
+            }
+        } else {
             data.value = source.value
         }
 
@@ -194,6 +183,7 @@ exports.updateWholeDoc = async function(req, res, next) {
             if (source.toDelete) {
                 deletions.push(source._id);
             } else {
+                data._id = source._id;
                 updates.push(data)
             }
         }
@@ -212,14 +202,22 @@ exports.updateWholeDoc = async function(req, res, next) {
     }
 
 
-    if(updates.length){
-        //await FieldValue.Model.upsertMany(updates, ['_id','record','user','key']);
-        //await FieldValue.Model.bulkWrite(updates);
-        console.log("karada")
-        await Promise.all(updates.map(x => FieldValue.Model.findOneAndUpdate({"_id": x._id},{"value": x.value},{runValidators: true, context:'query'})));
+    if (updates.length) {
+
+
+        await Promise.all(updates.map(x => {
+
+            if (FieldValue.validateMetadata.apply(x, next)) {
+                FieldValue.Model.findOneAndUpdate({"_id": x._id}, {
+                    "value": x.value,
+                    "objectValue": x.objectValue
+                }, {runValidators: true, context: 'query'}, (err, doc) => console.log(doc))
+            }
+
+
+        }));
 
     }
-
 
     await FieldValue.Model.insertMany(insertions);
 

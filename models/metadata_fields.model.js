@@ -42,6 +42,7 @@ const metadataFieldsSchema = new Schema({
         required:true
     },
     children:[mongoose.Schema.Types.ObjectId],
+    childNums:[String],
     dropDownData:[dropDownSchema],
     sort:Number
 });
