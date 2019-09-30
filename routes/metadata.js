@@ -13,13 +13,15 @@ router.get('/', function(req, res, next) {
 
 
 
-router.post('/create', metadataController.createMetadataDoc);
+//router.post('/create', metadataController.createMetadataDoc);
 
 router.put('/update/:id', metadataController.updateAddFieldValue);
 
 router.put('/updateDoc/:id', asyncMiddleware(metadataController.updateWholeDoc));
 
-router.get('/', metadataController.getMetadataList)
+router.get('/:last_id/:dir/:status?', asyncMiddleware(metadataController.getMetadataList));
+
+router.post('/createdoc_fields', metadataController.createdoc_fields);
 
 //router.put('/update:id', metadataController.update);
 //router.delete('/delete:id', metadataController.delete);
