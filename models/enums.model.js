@@ -12,6 +12,13 @@ const enumsSchema = new Schema({
     theSet:[String]
 });
 
+
+const complex  = new Schema({
+    keys:Object
+});
+
+
 const enumModel = mongoose.model('SeparatedEnum', enumsSchema)
-module.exports = enumModel;
+const enumObject = mongoose.model('enums', complex)
+module.exports = enumObject;
 
